@@ -55,8 +55,10 @@ class ProjectsApi:
             organization_id(str): User's organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
             'organization_id': organization_id
             }
         
@@ -71,7 +73,7 @@ class ProjectsApi:
             instance: Projects list object.
 
         """
-        resp = zoho_http_client.get(base_url, self.details, parameters) 
+        resp = zoho_http_client.get(base_url, self.details, self.headers, parameters) 
         return parser.get_projects_list(resp)
  
     def get_project(self, project_id):
@@ -85,7 +87,7 @@ class ProjectsApi:
 
         """
         url = base_url + project_id
-        resp = zoho_http_client.get(url, self.details) 
+        resp = zoho_http_client.get(url, self.details, self.headers) 
         return parser.get_project(resp) 
 
     def create_project(self, project):
@@ -102,7 +104,7 @@ class ProjectsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(base_url, self.details, data) 
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data) 
         return parser.get_project(resp) 
 
     def update_project(self, project_id, project):
@@ -121,7 +123,7 @@ class ProjectsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data) 
+        resp = zoho_http_client.put(url, self.details, self.headers, data) 
         return parser.get_project(resp) 
 
     def delete_project(self, project_id):
@@ -135,7 +137,7 @@ class ProjectsApi:
 
         """
         url = base_url + project_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
     def activate_project(self, project_id):
@@ -150,7 +152,7 @@ class ProjectsApi:
 
         """
         url = base_url + project_id + '/active'
-        resp = zoho_http_client.post(url, self.details, '')
+        resp = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(resp) 
 
     def inactivate_project(self, project_id):
@@ -165,7 +167,7 @@ class ProjectsApi:
 
         """
         url = base_url + project_id + '/inactive'
-        resp = zoho_http_client.post(url, self.details, '')
+        resp = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(resp) 
 
     def clone_project(self, project_id, project):
@@ -183,8 +185,7 @@ class ProjectsApi:
         data = {
             'JSONString': json_object
             }
-        print data
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_project(resp) 
 
     def get_tasks(self, project_id, sort_column=None):
@@ -206,7 +207,7 @@ class ProjectsApi:
                 }       
         else:
             parameter = None
-        resp = zoho_http_client.get(url, self.details, parameter)
+        resp = zoho_http_client.get(url, self.details, self.headers, parameter)
         return parser.get_tasks_list(resp) 
 
     def get_task(self, project_id, task_id):
@@ -221,7 +222,7 @@ class ProjectsApi:
 
         """
         url = base_url + project_id + '/tasks/' + task_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_task(resp) 
      
     def add_task(self, project_id, task):
@@ -240,7 +241,7 @@ class ProjectsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_task(resp) 
 
     def update_task(self, project_id, task_id, task):
@@ -259,7 +260,7 @@ class ProjectsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_task(resp) 
 
     def delete_task(self, project_id, task_id):
@@ -274,7 +275,7 @@ class ProjectsApi:
 
         """
         url = base_url + project_id + '/tasks/' + task_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
     def get_users(self, project_id):
@@ -288,7 +289,7 @@ class ProjectsApi:
 
         """
         url = base_url + project_id + '/users'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_users(resp) 
 
     def get_user(self, project_id, user_id):
@@ -306,7 +307,7 @@ class ProjectsApi:
 
         """
         url = base_url + project_id + '/users/' + user_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_user(resp) 
 
     def assign_users(self, project_id, users):
@@ -331,7 +332,7 @@ class ProjectsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_users(resp) 
 
     def invite_user(self, project_id, user):
@@ -346,13 +347,11 @@ class ProjectsApi:
 
         """
         url = base_url + project_id + '/users/invite'
-        print user.to_json()
         json_object = dumps(user.to_json())
         data = {
             'JSONString': json_object
             }
-        print data
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_user(resp) 
  
     def update_user(self, project_id, user_id, user):
@@ -372,7 +371,7 @@ class ProjectsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_user(resp)  
 
     def delete_user(self, project_id, user_id):
@@ -387,7 +386,7 @@ class ProjectsApi:
 
         """
         url = base_url + project_id + '/users/' + user_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
     def get_time_entries(self, parameters=None):
@@ -402,7 +401,7 @@ class ProjectsApi:
 
         """
         url = base_url + 'timeentries'
-        resp = zoho_http_client.get(url, self.details, parameters) 
+        resp = zoho_http_client.get(url, self.details, self.headers, parameters) 
         return parser.get_time_entries_list(resp) 
 
     def get_time_entry(self, time_entry_id):
@@ -416,7 +415,7 @@ class ProjectsApi:
 
         """
         url = base_url + 'timeentries/' + time_entry_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_time_entry(resp) 
 
     def log_time_entries(self, time_entry):
@@ -434,7 +433,7 @@ class ProjectsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_time_entry(resp) 
 
     def update_time_entry(self, time_entry_id, time_entry):
@@ -453,7 +452,7 @@ class ProjectsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_time_entry(resp) 
 
     def delete_time_entry(self, time_entry_id):
@@ -467,7 +466,7 @@ class ProjectsApi:
 
         """
         url = base_url + 'timeentries/' + time_entry_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
     def delete_time_entries(self, time_entry_ids):
@@ -485,7 +484,7 @@ class ProjectsApi:
         param = {
             'time_entry_ids': time_entry_ids
             }
-        resp = zoho_http_client.delete(url, self.details, param) 
+        resp = zoho_http_client.delete(url, self.details, self.headers, param) 
         return parser.get_message(resp) 
 
     def get_timer(self):
@@ -499,7 +498,7 @@ class ProjectsApi:
 
         """
         url = base_url + 'timeentries/runningtimer/me'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_time_entry(resp) 
  
     def start_timer(self, timer_entry_id):
@@ -516,7 +515,7 @@ class ProjectsApi:
         data = {
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_time_entry(resp)
 
     def stop_timer(self): 
@@ -530,7 +529,7 @@ class ProjectsApi:
         data = {
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_time_entry(resp)
 
     def get_comments(self, project_id):
@@ -544,7 +543,7 @@ class ProjectsApi:
 
         """
         url = base_url + project_id + '/comments'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_comments(resp) 
 
     def post_comment(self, project_id, comment):
@@ -565,7 +564,7 @@ class ProjectsApi:
         json_string = {
             'JSONString': dumps(data)
             }
-        resp = zoho_http_client.post(url, self.details, json_string)
+        resp = zoho_http_client.post(url, self.details, self.headers, json_string)
         return parser.get_comment(resp) 
      
     def delete_comment(self, project_id, comment_id):
@@ -580,7 +579,7 @@ class ProjectsApi:
  
         """
         url = base_url + project_id + '/comments/' + comment_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
     def get_invoices(self, project_id, sort_column=None):
@@ -600,7 +599,7 @@ class ProjectsApi:
                 } 
         else:
             param = None
-        resp = zoho_http_client.get(url, self.details, param)
+        resp = zoho_http_client.get(url, self.details, self.headers, param)
         return parser.get_invoice_list(resp) 
         
             

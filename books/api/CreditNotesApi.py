@@ -51,9 +51,11 @@ class CreditNotesApi:
             organization_id(str): User's organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken':authtoken, 
-            'organization_id':organization_id
+            'organization_id': organization_id
             }
 
     def get_credit_notes(self, parameter=None):
@@ -71,7 +73,7 @@ class CreditNotesApi:
             Books Exception: If status is '200' or '201'.
  
         """
-        response = zoho_http_client.get(base_url, self.details, parameter)
+        response = zoho_http_client.get(base_url, self.details, self.headers, parameter)
         return parser.creditnotes_list(response) 
 
     def get_credit_note(self, creditnote_id, print_pdf=None, accept=None):
@@ -95,7 +97,7 @@ class CreditNotesApi:
                 'print':str(print_pdf).lower(), 
                 'accept':accept
                 }
-            response = zoho_http_client.getfile(url, self.details, query)
+            response = zoho_http_client.getfile(url, self.details, self.headers, query)
             return response
         elif print_pdf is not None:
             query = {
@@ -105,19 +107,19 @@ class CreditNotesApi:
                 query.update({
                     'accept':'pdf'
                     })
-                response = zoho_http_client.getfile(url, self.details, query)
+                response = zoho_http_client.getfile(url, self.details, self.headers, query)
                 return response
             else:
-                response = zoho_http_client.get(url, self.details, query)
+                response = zoho_http_client.get(url, self.details, self.headers, query)
                 return parser.get_creditnote(response) 
         elif accept is not None:
             query = {
                 'accept':accept
                 }
-            response = zoho_http_client.getfile(url, self.details, query)
+            response = zoho_http_client.getfile(url, self.details, self.headers, query)
             return response 
         else:
-            response = zoho_http_client.get(url, self.details)
+            response = zoho_http_client.get(url, self.details, self.headers)
             return parser.get_creditnote(response) 
   
     def create(self, credit_note, invoice_id=None, \
@@ -156,7 +158,7 @@ class CreditNotesApi:
                 }
         else:
             query = None
-        response = zoho_http_client.post(base_url, self.details, data, query)
+        response = zoho_http_client.post(base_url, self.details, self.headers, data, query)
         return parser.get_creditnote(response) 
 
     def update(self, credit_note_id, credit_note, \
@@ -185,7 +187,7 @@ class CreditNotesApi:
                 } 
         else:
             query = None
-        response = zoho_http_client.put(url, self.details, data, query)
+        response = zoho_http_client.put(url, self.details, self.headers, data, query)
         return parser.get_creditnote(response)
 
     def delete(self, creditnote_id):
@@ -199,7 +201,7 @@ class CreditNotesApi:
 
         """
         url = base_url + creditnote_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response) 
 
     def convert_to_open(self, creditnote_id):
@@ -213,7 +215,7 @@ class CreditNotesApi:
 
         """
         url = base_url + creditnote_id  + '/status/open'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response) 
 
     def void_credit_note(self, creditnote_id):
@@ -227,7 +229,7 @@ class CreditNotesApi:
 
         """
         url = base_url + creditnote_id + '/status/void'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response) 
   
     def email_credit_note(self, creditnote_id, email, attachment=None,
@@ -282,7 +284,7 @@ class CreditNotesApi:
         else:
             query = None
             file_list = None
-        response = zoho_http_client.post(url, self.details, data, query, 
+        response = zoho_http_client.post(url, self.details, self.headers, data, query, 
                                          file_list)
         return parser.get_message(response) 
 
@@ -297,7 +299,7 @@ class CreditNotesApi:
 
         """
         url = base_url + creditnote_id + '/emailhistory'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.email_history(response) 
 
     def get_email_content(self, creditnote_id, email_template_id=None):
@@ -318,7 +320,7 @@ class CreditNotesApi:
                 }
         else:
             query = None
-        response = zoho_http_client.get(url, self.details, query)
+        response = zoho_http_client.get(url, self.details, self.headers, query)
         return parser.email(response) 
   
     def update_billing_address(self, creditnote_id, address, 
@@ -346,7 +348,7 @@ class CreditNotesApi:
                 }
         else:
             query = None
-        response = zoho_http_client.put(url, self.details, data, query)
+        response = zoho_http_client.put(url, self.details, self.headers, data, query)
         return parser.get_billing_address(response)
 
     def update_shipping_address(self, creditnote_id, address, 
@@ -374,7 +376,7 @@ class CreditNotesApi:
                 }
         else:
             query = None
-        response = zoho_http_client.put(url, self.details, data, query)
+        response = zoho_http_client.put(url, self.details, self.headers, data, query)
         return parser.get_shipping_address(response) 
 
     def list_credit_note_template(self):
@@ -385,7 +387,7 @@ class CreditNotesApi:
 
         """
         url = base_url + 'templates'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.list_templates(response) 
  
     def update_credit_note_template(self, creditnote_id, template_id):
@@ -400,7 +402,7 @@ class CreditNotesApi:
 
         """
         url = base_url + creditnote_id + '/templates/' + template_id
-        response = zoho_http_client.put(url, self.details, '')
+        response = zoho_http_client.put(url, self.details, self.headers, '')
         return parser.get_message(response) 
 
 #### Apply to Invoice------------------------------------------------------------------------------------------------------------
@@ -420,7 +422,7 @@ class CreditNotesApi:
 
         """
         url = base_url + creditnote_id + '/invoices'  
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.list_invoices_credited(response) 
   
     def credit_to_invoice(self, creditnote_id, invoice):
@@ -446,7 +448,7 @@ class CreditNotesApi:
         json_string = {
             'JSONString': dumps(invoices)
             }
-        response = zoho_http_client.post(url, self.details, json_string)
+        response = zoho_http_client.post(url, self.details, self.headers, json_string)
         return parser.credit_to_invoice(response)
       
     def delete_invoices_credited(self, creditnote_id, creditnote_invoice_id):
@@ -462,7 +464,7 @@ class CreditNotesApi:
 
         """
         url = base_url + creditnote_id + '/invoices/' + creditnote_invoice_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response) 
 
 ##  REFUND-----------------------------------------------------------------------------------------------------------------------
@@ -494,7 +496,7 @@ class CreditNotesApi:
                 }
         else:
             parameter = None
-        response = zoho_http_client.get(url, self.details, parameter)
+        response = zoho_http_client.get(url, self.details, self.headers, parameter)
         return parser.creditnote_refunds(response) 
 
     def list_refunds_of_credit_note(self, creditnote_id): 
@@ -508,7 +510,7 @@ class CreditNotesApi:
 
         """
         url = base_url + creditnote_id + '/refunds'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.creditnote_refunds(response)
 
     def get_credit_note_refund(self, creditnote_id, creditnote_refund_id):
@@ -523,7 +525,7 @@ class CreditNotesApi:
 
         """       
         url = base_url + creditnote_id + '/refunds/' + creditnote_refund_id
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_creditnote_refund(response)
   
     def refund_credit_note(self, creditnote_id, creditnote):
@@ -541,7 +543,7 @@ class CreditNotesApi:
         data = { 
             'JSONString': json_object
             }
-        response = zoho_http_client.post(url, self.details, data)
+        response = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_creditnote_refund(response)
      
     def update_credit_note_refund(self, creditnote_id, creditnote_refund_id, 
@@ -562,7 +564,7 @@ class CreditNotesApi:
         data = { 
             'JSONString': json_object
             }
-        response = zoho_http_client.put(url, self.details, data)
+        response = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_creditnote_refund(response) 
 
     def delete_credit_note_refund(self, creditnote_id, creditnote_refund_id): 
@@ -577,7 +579,7 @@ class CreditNotesApi:
 
         """
         url = base_url + creditnote_id + '/refunds/' + creditnote_refund_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response)
 
 ## Comments and History----------------------------------------------------------------------------------------------------------
@@ -594,7 +596,7 @@ class CreditNotesApi:
 
         """
         url = base_url + creditnote_id + '/comments'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.comments_list(response) 
   
     def add_comment(self, creditnote_id, comments):
@@ -614,7 +616,7 @@ class CreditNotesApi:
         json_string = {
             'JSONString': dumps(data)
             }
-        response = zoho_http_client.post(url, self.details, json_string)
+        response = zoho_http_client.post(url, self.details, self.headers, json_string)
         return parser.get_comment(response) 
 
     def delete_comment(self, creditnote_id, comment_id):
@@ -629,6 +631,6 @@ class CreditNotesApi:
 
         """
         url = base_url + creditnote_id + '/comments/' + comment_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response) 
 

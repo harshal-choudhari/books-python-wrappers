@@ -33,9 +33,11 @@ class ExpensesApi:
             organization_id(str): User's organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken':authtoken, 
-            'organization_id':organization_id
+            'organization_id': organization_id
             }
   
     def get_expenses(self, parameter=None): 
@@ -49,7 +51,7 @@ class ExpensesApi:
             instance: Expenses list object.
 
         """
-        resp = zoho_http_client.get(base_url, self.details, parameter)
+        resp = zoho_http_client.get(base_url, self.details, self.headers, parameter)
         return parser.get_list(resp) 
   
     def get(self, expense_id):
@@ -63,7 +65,7 @@ class ExpensesApi:
 
         """
         url = base_url + expense_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_expense(resp) 
 
     def create(self, expense, receipt=None):
@@ -91,7 +93,7 @@ class ExpensesApi:
                 }]
         else:
             attachments = None
-        resp = zoho_http_client.post(base_url, self.details, data, None, \
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data, None, \
                                      attachments)
         return parser.get_expense(resp) 
 
@@ -122,7 +124,7 @@ class ExpensesApi:
                     'content': open(receipt).read()
                     }
                 }]
-        resp = zoho_http_client.put(url, self.details, data, None,
+        resp = zoho_http_client.put(url, self.details, self.headers, data, None,
                                      attachments)
         return parser.get_expense(resp) 
   
@@ -137,7 +139,7 @@ class ExpensesApi:
 
         """
         url = base_url + expense_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
   
     def list_comments_history(self, expense_id):
@@ -151,7 +153,7 @@ class ExpensesApi:
  
         """
         url = base_url + expense_id + '/comments'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_comments(resp) 
 
     def get_receipt(self, expense_id, preview=None):
@@ -172,7 +174,7 @@ class ExpensesApi:
                 }
         else:
             query = None
-        resp = zoho_http_client.getfile(url, self.details, query)
+        resp = zoho_http_client.getfile(url, self.details, self.headers, query)
         return resp 
 
     def add_receipt(self, expense_id, receipt):
@@ -197,7 +199,7 @@ class ExpensesApi:
         data = { 
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data, None, attachments)
+        resp = zoho_http_client.post(url, self.details, self.headers, data, None, attachments)
         return parser.get_message(resp) 
 
     def delete_receipt(self, expense_id):
@@ -212,6 +214,6 @@ class ExpensesApi:
 
         """
         url = base_url + expense_id + '/receipt'
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
   

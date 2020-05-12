@@ -1,11 +1,15 @@
 #$Id$#
 
+import os
 from books.model.Contact import Contact
 from books.model.Email import Email
 from books.model.Address import Address
 from books.model.ContactPerson import ContactPerson
 from books.service.ZohoBooks import ZohoBooks
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 contact_api = zoho_books.get_contacts_api()
 contact_id = contact_api.get_contacts().get_contacts()[0].get_contact_id()
@@ -16,11 +20,11 @@ currency_id = settings_api.get_currencies().get_currencies()[0].get_currency_id(
 # to list contacts
 
 parameter = {'sort_column':'last_name'}
-print contact_api.get_contacts(parameter)
+print(contact_api.get_contacts(parameter))
 
 # to get a contact
 
-print contact_api.get(contact_id)
+print(contact_api.get(contact_id))
 
 # to create contact
 
@@ -63,7 +67,7 @@ contact.set_shipping_address(saddress)
 
 contact.set_notes('Payment option: Through check' )
 
-print contact_api.create(contact)
+print(contact_api.create(contact))
 
 # to update a contact 
 
@@ -107,27 +111,27 @@ contact.set_shipping_address(saddress)
 
 contact.set_notes('Payment option : Through check' )
 
-print contact_api.update(contact_id, contact)
+print(contact_api.update(contact_id, contact))
 
 # to delete a contact
 
-print contact_api.delete(contact_id)
+print(contact_api.delete(contact_id))
 
 #mark as active
 
-print contact_api.mark_active(contact_id)
+print(contact_api.mark_active(contact_id))
 
 #mark as inactive
  
-print contact_api.mark_inactive(contact_id)
+print(contact_api.mark_inactive(contact_id))
 
 #enable payment reminder
 
-print contact_api.enable_payment_reminder(contact_id)
+print(contact_api.enable_payment_reminder(contact_id))
 
 #disable payment reminder
 
-print contact_api.disable_payment_reminder(contact_id)
+print(contact_api.disable_payment_reminder(contact_id))
 
 #send email statement (current month's statement will be sent to contact)
 
@@ -136,20 +140,20 @@ to_mailid = ['example@zohocorp.com', 'example@gmail.com', 'example@gmail.com']
 email.set_to_mail_ids(to_mailid)
 email.set_subject('Statement of transactions')
 email.set_body('welcome') 
-#print contact_api.email_statement(contact_id, email)
+#print(contact_api.email_statement(contact_id, email))
 
 #send email statement (mentioned date statement will be sent to contact)
 start_date = '2014-01-01'
 end_date = '2014-01-20'
-#print contact_api.email_statement(contact_id, email, start_date, end_date)
+#print(contact_api.email_statement(contact_id, email, start_date, end_date))
 
 #send email statement with attachment 
 attachment = ['/{file_directory}/fil1.txt', '/{file_directory}/fil2.txt']
-print contact_api.email_statement(contact_id, email, start_date, end_date, attachment)
+print(contact_api.email_statement(contact_id, email, start_date, end_date, attachment))
 
 # get email statement
 
-print contact_api.get_statement_mail_content(contact_id, '2014-01-01', '2014-01-15')
+print(contact_api.get_statement_mail_content(contact_id, '2014-01-01', '2014-01-15'))
 
 #send email to contact
 
@@ -159,26 +163,26 @@ email.set_to_mail_ids(to_mailid)
 email.set_subject('Statement of transactions')
 email.set_body('welcome') 
 attachment = ['/{file_directory}/n1.png', '/{file_directory}/new1.pdf']
-#print contact_api.email_contact(contact_id, email)
-print contact_api.email_contact(contact_id, email, None, True)
-print contact_api.email_contact(contact_id, email, attachment)
-print contact_api.email_contact(contact_id, email, attachment, True)
+#print(contact_api.email_contact(contact_id, email)
+print(contact_api.email_contact(contact_id, email, None, True))
+print(contact_api.email_contact(contact_id, email, attachment))
+print(contact_api.email_contact(contact_id, email, attachment, True))
 
 # list comments
 
-print contact_api.list_comments(contact_id)
-print contact_api.get_comments(contact_id)
+print(contact_api.list_comments(contact_id))
+print(contact_api.get_comments(contact_id))
 
 #list refunds
 
-print contact_api.list_refunds(contact_id)
-print contact_api.get_refunds(contact_id)
+print(contact_api.list_refunds(contact_id))
+print(contact_api.get_refunds(contact_id))
 
 #track 1099
 
-print contact_api.track_1099(contact_id)
+print(contact_api.track_1099(contact_id))
 
 # untrack 1099
 
-print contact_api.untrack_1099(contact_id)
+print(contact_api.untrack_1099(contact_id))
 

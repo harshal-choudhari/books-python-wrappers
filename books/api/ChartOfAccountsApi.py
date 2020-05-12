@@ -33,8 +33,10 @@ class ChartOfAccountsApi:
             organization id(str): User's Organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken,
             'organization_id': organization_id
             }
 
@@ -49,7 +51,7 @@ class ChartOfAccountsApi:
             instance: Chart of accounts list object.
 
         """
-        resp = zoho_http_client.get(base_url, self.details, parameters) 
+        resp = zoho_http_client.get(base_url, self.details, self.headers, parameters) 
         return parser.get_list(resp) 
   
     def get(self, account_id):    
@@ -63,7 +65,7 @@ class ChartOfAccountsApi:
 
         """
         url = base_url + account_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_account(resp) 
 
     def create(self, account):
@@ -80,7 +82,7 @@ class ChartOfAccountsApi:
         data = { 
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(base_url, self.details, data)
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data)
         return parser.get_account(resp) 
   
     def update(self, account_id, account):
@@ -99,7 +101,7 @@ class ChartOfAccountsApi:
         data = { 
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_account(resp) 
 
     def delete(self, account_id):
@@ -113,7 +115,7 @@ class ChartOfAccountsApi:
 
         """
         url = base_url + account_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
   
     def mark_an_account_as_active(self, account_id):
@@ -130,7 +132,7 @@ class ChartOfAccountsApi:
             'JSONString': ''
             }
         url = base_url + account_id + '/active'
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp)
  
     def mark_an_account_as_inactive(self, account_id):
@@ -147,7 +149,7 @@ class ChartOfAccountsApi:
             'JSONString': ''
             }
         url = base_url + account_id + '/inactive'
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp)
 
     def list_of_transactions(self, parameters=None):
@@ -162,7 +164,7 @@ class ChartOfAccountsApi:
 
         """
         url = base_url + 'transactions'
-        resp = zoho_http_client.get(url, self.details, parameters) 
+        resp = zoho_http_client.get(url, self.details, self.headers, parameters) 
         return parser.get_transactions_list(resp) 
 
     def delete_a_transaction(self, transaction_id):
@@ -176,6 +178,6 @@ class ChartOfAccountsApi:
 
         """
         url = base_url + 'transactions/' + transaction_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 

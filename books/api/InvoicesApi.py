@@ -4,7 +4,7 @@ from os.path import basename
 from json import dumps
 from books.util.ZohoHttpClient import ZohoHttpClient
 from books.parser.InvoicesParser import InvoicesParser
-from Api import Api
+from .Api import Api
 
 base_url = Api().base_url + 'invoices/'
 parser = InvoicesParser()
@@ -62,9 +62,11 @@ class InvoicesApi:
             organization_id(str): User's organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken':authtoken, 
-            'organization_id':organization_id
+            'organization_id': organization_id
             }
 
     def get_invoices(self, parameter=None):
@@ -78,7 +80,7 @@ class InvoicesApi:
             instance: Invoice list instance.
  
         """
-        response = zoho_http_client.get(base_url, self.details, parameter)
+        response = zoho_http_client.get(base_url, self.details, self.headers, parameter)
         return parser.get_list(response)   
   
     def get(self, invoice_id, print_pdf=None, accept=None):
@@ -103,25 +105,25 @@ class InvoicesApi:
                 'print': print_pdf, 
                 'accept': accept
                 }
-            resp = zoho_http_client.getfile(url, self.details, query)
+            resp = zoho_http_client.getfile(url, self.details, self.headers, query)
             return resp
         elif print_pdf is not None:
              query = {'print': print_pdf} 
              if print_pdf is True:
                  query.update({'accept':'pdf'})
-                 resp = zoho_http_client.getfile(url, self.details, query)
+                 resp = zoho_http_client.getfile(url, self.details, self.headers, query)
                  return  resp
              else:
-                 response = zoho_http_client.get(url, self.details, query)
+                 response = zoho_http_client.get(url, self.details, self.headers, query)
                  return parser.get(response) 
         elif accept is not None:
             query = {
                 'accept': accept
                 }
-            resp = zoho_http_client.getfile(url, self.details, query)
+            resp = zoho_http_client.getfile(url, self.details, self.headers, query)
             return resp 
         else:
-            response = zoho_http_client.get(url, self.details)
+            response = zoho_http_client.get(url, self.details, self.headers)
             return parser.get(response)
    
     def create(self, invoice, send=None, ignore_auto_number_generation=None):
@@ -158,7 +160,7 @@ class InvoicesApi:
                     }
         else: 
             query = None
-        response = zoho_http_client.post(base_url, self.details, data, query)
+        response = zoho_http_client.post(base_url, self.details, self.headers, data, query)
         return parser.get(response)  
 
     def update(self, invoice_id, invoice, ignore_auto_number_generation=None):
@@ -186,7 +188,7 @@ class InvoicesApi:
                 }
         else:
             query = None
-        response = zoho_http_client.put(url, self.details, data, query)
+        response = zoho_http_client.put(url, self.details, self.headers, data, query)
         return parser.get(response) 
       
     def delete(self, invoice_id):
@@ -200,7 +202,7 @@ class InvoicesApi:
 
         """
         url = base_url + invoice_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response) 
    
     def mark_an_invoice_as_sent(self, invoice_id):
@@ -214,7 +216,7 @@ class InvoicesApi:
         
         """
         url = base_url + invoice_id + '/status/sent'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response)  
 
     def void_an_invoice(self, invoice_id): 
@@ -228,7 +230,7 @@ class InvoicesApi:
         
         """
         url = base_url + invoice_id + '/status/void'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response)   
 
     def mark_as_draft(self, invoice_id):
@@ -243,7 +245,7 @@ class InvoicesApi:
  
         """
         url = base_url + invoice_id + '/status/draft/'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response)    
 
     def email_an_invoice(self, invoice_id, email, attachment=None, \
@@ -340,7 +342,7 @@ class InvoicesApi:
         else:
             query = None
             file_list = None
-        response = zoho_http_client.post(url, self.details, data, query, file_list)
+        response = zoho_http_client.post(url, self.details, self.headers, data, query, file_list)
         return parser.get_message(response) 
 
     def email_invoices(self, contact_id, invoice_ids, email=None, \
@@ -381,7 +383,7 @@ class InvoicesApi:
         fields = {
             'JSONString': dumps(data)
             }    
-        response = zoho_http_client.post(url, self.details, fields, query)
+        response = zoho_http_client.post(url, self.details, self.headers, fields, query)
         return parser.get_message(response) 
 
     def get_email_content(self, invoice_id, email_template_id=None):
@@ -403,7 +405,7 @@ class InvoicesApi:
                 }
         else:
             query = None
-        response = zoho_http_client.get(url, self.details, query)
+        response = zoho_http_client.get(url, self.details, self.headers, query)
         return parser.get_content(response) 
 
     def remind_customer(self, invoice_id, email, attachment=None, \
@@ -459,7 +461,7 @@ class InvoicesApi:
         else:
             query = None
             file_list = None
-        response = zoho_http_client.post(url, self.details, data, query, file_list)
+        response = zoho_http_client.post(url, self.details, self.headers, data, query, file_list)
         return parser.get_message(response)  
 
     def bulk_invoice_reminder(self, invoice_id):
@@ -476,7 +478,7 @@ class InvoicesApi:
         invoice_ids = {
             'invoice_ids': invoice_id
             }
-        response = zoho_http_client.post(url, self.details, '', invoice_ids)
+        response = zoho_http_client.post(url, self.details, self.headers, '', invoice_ids)
         return parser.get_message(response) 
  
     def get_payment_reminder_mail_content(self, invoice_id):
@@ -490,7 +492,7 @@ class InvoicesApi:
 
         """
         url = base_url + invoice_id + '/paymentreminder'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.payment_reminder_mail_content(response) 
  
     def bulk_export_invoices(self, invoice_id):
@@ -508,7 +510,7 @@ class InvoicesApi:
         query = {
             'invoice_ids': invoice_id
             }
-        response = zoho_http_client.getfile(url, self.details, query)
+        response = zoho_http_client.getfile(url, self.details, self.headers, query)
         return response 
    
     def bulk_print_invoices(self, invoice_id):
@@ -525,7 +527,7 @@ class InvoicesApi:
         invoice_ids = {
             'invoice_ids': invoice_id
             }
-        response = zoho_http_client.getfile(url, self.details, invoice_ids)
+        response = zoho_http_client.getfile(url, self.details, self.headers, invoice_ids)
         return response 
     
     def disable_payment_reminder(self, invoice_id):
@@ -539,7 +541,7 @@ class InvoicesApi:
 
         """
         url = base_url + invoice_id + '/paymentreminder/disable'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response) 
 
     def enable_payment_reminder(self, invoice_id):
@@ -553,7 +555,7 @@ class InvoicesApi:
 
         """
         url = base_url + invoice_id + '/paymentreminder/enable'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response)        
       
     def write_off_invoice(self, invoice_id):
@@ -567,7 +569,7 @@ class InvoicesApi:
 
         """
         url = base_url + invoice_id + '/writeoff'  
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response) 
  
     def cancel_write_off(self, invoice_id):
@@ -582,7 +584,7 @@ class InvoicesApi:
 
         """
         url = base_url + invoice_id + '/writeoff/cancel'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response) 
 
     def update_billing_address(self, invoice_id, address, \
@@ -610,7 +612,7 @@ class InvoicesApi:
                 }
         else:
             query = None
-        response = zoho_http_client.put(url, self.details, data, query)
+        response = zoho_http_client.put(url, self.details, self.headers, data, query)
         return parser.get_billing_address(response) 
 
     def update_shipping_address(self, invoice_id, address, \
@@ -638,7 +640,7 @@ class InvoicesApi:
                 }
         else:
             query = None
-        response = zoho_http_client.put(url, self.details, data, query)
+        response = zoho_http_client.put(url, self.details, self.headers, data, query)
         return parser.get_shipping_address(response)  
 
     def list_invoice_templates(self):
@@ -649,7 +651,7 @@ class InvoicesApi:
 
         """
         url = base_url + 'templates'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.invoice_template_list(response) 
 
     def update_invoice_template(self, invoice_id, template_id):
@@ -664,7 +666,7 @@ class InvoicesApi:
         
         """
         url = base_url + invoice_id + '/templates/' + template_id
-        response = zoho_http_client.put(url, self.details, '')
+        response = zoho_http_client.put(url, self.details, self.headers, '')
         return parser.get_message(response) 
 
 ## Payments and Credits--------------------------------------------------------
@@ -680,7 +682,7 @@ class InvoicesApi:
 
         """
         url = base_url + invoice_id + '/payments'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.payments_list(response) 
 
     def list_credits_applied(self, invoice_id):
@@ -694,7 +696,7 @@ class InvoicesApi:
 
         """
         url = base_url + invoice_id + '/creditsapplied'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.credits_list(response) 
 
     def apply_credits(self, invoice_id, payments_and_credits):
@@ -728,7 +730,7 @@ class InvoicesApi:
         json_string = {
             'JSONString': dumps(data)
             }
-        response = zoho_http_client.post(url, self.details, json_string)
+        response = zoho_http_client.post(url, self.details, self.headers, json_string)
         return parser.apply_credits(response) 
 
     def delete_payment(self, invoice_id, invoice_payment_id):
@@ -743,7 +745,7 @@ class InvoicesApi:
          
         """
         url = base_url + invoice_id + '/payments/' + invoice_payment_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response) 
 
     def delete_applied_credit(self, invoice_id, creditnotes_invoice_id):
@@ -760,7 +762,7 @@ class InvoicesApi:
         """
         url = base_url + invoice_id + '/creditsapplied/' + \
               creditnotes_invoice_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response) 
         
 ## Attachment------------------------------------------------------------------
@@ -779,7 +781,7 @@ class InvoicesApi:
         query_string = {
                 'preview': str(preview)
                 } if preview is not None else None     
-        response = zoho_http_client.getfile(url, self.details, query_string)
+        response = zoho_http_client.getfile(url, self.details, self.headers, query_string)
         return response  
 
     def add_attachment_to_an_invoice(self, invoice_id, attachment, \
@@ -817,7 +819,7 @@ class InvoicesApi:
         data = {
             'JSONString': ''
             }
-        response = zoho_http_client.post(url, self.details, data, query, \
+        response = zoho_http_client.post(url, self.details, self.headers, data, query, \
                                          file_list)
         return parser.get_message(response) 
 
@@ -840,7 +842,7 @@ class InvoicesApi:
         data = {
             'JSONString': ''
             }
-        response = zoho_http_client.put(url, self.details, data, query)
+        response = zoho_http_client.put(url, self.details, self.headers, data, query)
         return parser.get_message(response) 
 
     def delete_an_attachment(self, invoice_id):
@@ -855,7 +857,7 @@ class InvoicesApi:
 
         """
         url = base_url + invoice_id + '/attachment'
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response) 
  
     def delete_expense_receipt(self, expense_id):
@@ -871,7 +873,7 @@ class InvoicesApi:
   
         """
         url = base_url + 'expenses/' + expense_id + '/receipt'
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response) 
 
   
@@ -890,7 +892,7 @@ class InvoicesApi:
 
         """ 
         url = base_url + invoice_id + '/comments'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.comments_list(response) 
   
     def add_comment(self, invoice_id, comments):
@@ -913,7 +915,7 @@ class InvoicesApi:
         json_string = {
             'JSONString': dumps(data)
             }
-        response = zoho_http_client.post(url, self.details, json_string)
+        response = zoho_http_client.post(url, self.details, self.headers, json_string)
         return parser.get_comment(response) 
 
     def update_comment(self, invoice_id, comment_id, comments):
@@ -936,7 +938,7 @@ class InvoicesApi:
         json_string = {
             'JSONString': dumps(data)
             }
-        response = zoho_http_client.put(url, self.details, json_string)
+        response = zoho_http_client.put(url, self.details, self.headers, json_string)
         return parser.get_comment(response) 
   
     def delete_comment(self, invoice_id, comment_id):
@@ -951,7 +953,7 @@ class InvoicesApi:
 
         """
         url = base_url + invoice_id + '/comments/' + comment_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response) 
    
  

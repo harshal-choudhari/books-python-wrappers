@@ -28,8 +28,10 @@ class BaseCurrencyAdjustmentApi:
             organization id(str): User's Organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
             'organization_id': organization_id
             }
 
@@ -44,7 +46,7 @@ class BaseCurrencyAdjustmentApi:
             instance: Base currency adjustment list object.
 
         """
-        resp = zoho_http_client.get(base_url, self.details, parameters) 
+        resp = zoho_http_client.get(base_url, self.details, self.headers, parameters) 
         return parser.get_list(resp) 
 
     def get(self, base_currency_adjustment_id):
@@ -58,7 +60,7 @@ class BaseCurrencyAdjustmentApi:
 
         """
         url = base_url + base_currency_adjustment_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_base_currency_adjustment(resp) 
 
     def list_account_details(self, parameters):
@@ -73,7 +75,7 @@ class BaseCurrencyAdjustmentApi:
 
         """
         url = base_url + 'accounts'
-        resp = zoho_http_client.get(url, self.details, parameters)
+        resp = zoho_http_client.get(url, self.details, self.headers, parameters)
         return parser.list_account_details(resp)
 
     def create(self, base_currency_adjustment, account_id): 
@@ -95,7 +97,7 @@ class BaseCurrencyAdjustmentApi:
         account_ids = {
             'account_ids': account_id
             }
-        resp = zoho_http_client.post(base_url, self.details, data, account_ids)
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data, account_ids)
         return parser.get_base_currency_adjustment(resp) 
 
     def delete(self, base_currency_adjustment_id):
@@ -110,6 +112,6 @@ class BaseCurrencyAdjustmentApi:
  
         """
         url = base_url + base_currency_adjustment_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp)
 

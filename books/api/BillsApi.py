@@ -40,8 +40,10 @@ class BillsApi:
             organization id(str): User's Organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
             'organization_id': organization_id
             }
 
@@ -56,7 +58,7 @@ class BillsApi:
             instance: Bill list object.
  
         """
-        resp = zoho_http_client.get(base_url, self.details, parameter) 
+        resp = zoho_http_client.get(base_url, self.details, self.headers, parameter) 
         return parser.get_list(resp) 
 
     def get(self, bill_id):
@@ -70,7 +72,7 @@ class BillsApi:
 
         """
         url = base_url + bill_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_bill(resp) 
 
     def create(self, bill, attachment=None):
@@ -98,7 +100,7 @@ class BillsApi:
                     'content': open(attachment).read()
                     } 
                 }]
-        resp = zoho_http_client.post(base_url, self.details, data, None, \
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data, None, \
                                      attachments)
         return parser.get_bill(resp) 
 
@@ -129,7 +131,7 @@ class BillsApi:
                     'content': open(attachment).read()
                     } 
                 }]
-        resp = zoho_http_client.put(url, self.details, data, None, \
+        resp = zoho_http_client.put(url, self.details, self.headers, data, None, \
                                      attachments)
         return parser.get_bill(resp) 
 
@@ -144,7 +146,7 @@ class BillsApi:
  
         """
         url = base_url + bill_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
     def void_a_bill(self, bill_id):
@@ -158,7 +160,7 @@ class BillsApi:
 
         """
         url = base_url + bill_id + '/status/void'
-        resp = zoho_http_client.post(url, self.details, '') 
+        resp = zoho_http_client.post(url, self.details, self.headers, '') 
         return parser.get_message(resp) 
   
     def mark_a_bill_as_open(self, bill_id):
@@ -173,7 +175,7 @@ class BillsApi:
 
         """
         url = base_url + bill_id + '/status/open'
-        resp = zoho_http_client.post(url, self.details, '')
+        resp = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(resp) 
   
     def update_billing_address(self, bill_id, billing_address):
@@ -192,7 +194,7 @@ class BillsApi:
         data = { 
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_message(resp) 
  
     def list_bill_payments(self, bill_id):
@@ -206,7 +208,7 @@ class BillsApi:
 
         """
         url = base_url + bill_id + '/payments'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_payments_list(resp)
   
     def apply_credits(self, bill_id, bill_payments):
@@ -233,7 +235,7 @@ class BillsApi:
         json_string = {
             'JSONString': dumps(data)
             }
-        resp = zoho_http_client.post(url, self.details, json_string)
+        resp = zoho_http_client.post(url, self.details, self.headers, json_string)
         return parser.get_message(resp) 
 
     def delete_a_payment(self, bill_id, bill_payment_id):
@@ -251,7 +253,7 @@ class BillsApi:
 
         """
         url = base_url + bill_id + '/payments/' + bill_payment_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
     def get_a_bill_attachment(self, bill_id, preview=None):
@@ -273,7 +275,7 @@ class BillsApi:
         else:
             query = None
         url = base_url + bill_id + '/attachment'
-        resp = zoho_http_client.getfile(url, self.details, query) 
+        resp = zoho_http_client.getfile(url, self.details, self.headers, query) 
         return resp
  
     def add_attachments_to_a_bill(self, bill_id, attachment):
@@ -298,7 +300,7 @@ class BillsApi:
         data = {
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data, None, attachments)
+        resp = zoho_http_client.post(url, self.details, self.headers, data, None, attachments)
         return parser.get_message(resp) 
 
     def delete_an_attachment(self, bill_id):
@@ -312,7 +314,7 @@ class BillsApi:
   
         """
         url = base_url + bill_id + '/attachment'
-        resp = zoho_http_client.delete(url, self.details) 
+        resp = zoho_http_client.delete(url, self.details, self.headers) 
         return parser.get_message(resp) 
 
     def list_bill_comments_and_history(self, bill_id):
@@ -326,7 +328,7 @@ class BillsApi:
 
         """
         url = base_url + bill_id + '/comments'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_comments(resp) 
 
     def add_comment(self, bill_id, description):
@@ -347,7 +349,7 @@ class BillsApi:
         json_string = {
             'JSONString': dumps(data)
             }
-        resp = zoho_http_client.post(url, self.details, json_string)
+        resp = zoho_http_client.post(url, self.details, self.headers, json_string)
         return parser.get_comment(resp) 
 
     def delete_a_comment(self, bill_id, comment_id):
@@ -365,6 +367,6 @@ class BillsApi:
 
         """
         url = base_url + bill_id + '/comments/' + comment_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
   

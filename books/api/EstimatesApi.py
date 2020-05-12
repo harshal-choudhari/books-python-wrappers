@@ -3,7 +3,7 @@
 from os.path import basename
 from books.util.ZohoHttpClient import ZohoHttpClient
 from books.parser.EstimatesParser import EstimatesParser
-from Api import Api
+from .Api import Api
 from json import dumps
 
 base_url = Api().base_url + 'estimates/'
@@ -45,9 +45,11 @@ class EstimatesApi:
             organization_id(str): User's organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken':authtoken, 
-            'organization_id':organization_id
+            'organization_id': organization_id
             }
   
     def get_estimates(self, parameter=None):
@@ -61,7 +63,7 @@ class EstimatesApi:
             instance: Invoice list object.
 
         """  
-        response = zoho_http_client.get(base_url, self.details, parameter)
+        response = zoho_http_client.get(base_url, self.details, self.headers, parameter)
         return parser.get_list(response) 
 
     def get(self, estimate_id, print_pdf=None, accept=None):   
@@ -85,23 +87,23 @@ class EstimatesApi:
                 'print':print_pdf, 
                 'accept':accept
                 }
-            resp = zoho_http_client.getfile(url, self.details, query)
+            resp = zoho_http_client.getfile(url, self.details, self.headers, query)
             return resp
         elif print_pdf is True:
             query = {
                 'print':print_pdf, 
                 'accept':'pdf'
                 } 
-            resp = zoho_http_client.getfile(url, self.details, query)
+            resp = zoho_http_client.getfile(url, self.details, self.headers, query)
             return resp
         elif accept is not None:
             query = {
                 'accept':accept
                 }
-            resp = zoho_http_client.getfile(url, self.details, query)
+            resp = zoho_http_client.getfile(url, self.details, self.headers, query)
             return resp 
         else:
-            response = zoho_http_client.get(url, self.details)
+            response = zoho_http_client.get(url, self.details, self.headers)
             return parser.get_estimate(response) 
 
     def create(self, estimate, send=None, ignore_auto_number_generation=None):
@@ -137,7 +139,7 @@ class EstimatesApi:
         data = {
             'JSONString': json_object
             }
-        response = zoho_http_client.post(base_url, self.details, data, query)
+        response = zoho_http_client.post(base_url, self.details, self.headers, data, query)
         return parser.get_estimate(response)     
 
     def update(self, estimate_id, estimate, 
@@ -167,7 +169,7 @@ class EstimatesApi:
         data = {
             'JSONString': json_object
             }
-        response = zoho_http_client.put(url, self.details, data) 
+        response = zoho_http_client.put(url, self.details, self.headers, data) 
         return parser.get_estimate(response)
     
     def delete(self, estimate_id):
@@ -181,7 +183,7 @@ class EstimatesApi:
 
         """ 
         url = base_url + estimate_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response)
 
     def mark_an_estimate_as_sent(self, estimate_id):
@@ -195,7 +197,7 @@ class EstimatesApi:
 
         """
         url = base_url + estimate_id + '/status/sent'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response) 
 
     def mark_an_estimate_as_accepted(self, estimate_id):
@@ -209,7 +211,7 @@ class EstimatesApi:
  
         """
         url = base_url + estimate_id + '/status/accepted'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response) 
    
     def mark_an_estimate_as_declined(self, estimate_id):
@@ -224,7 +226,7 @@ class EstimatesApi:
 
         """
         url = base_url + estimate_id + '/status/declined'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response) 
   
     def email_an_estimate(self, estimate_id, email, attachment=None):
@@ -257,7 +259,7 @@ class EstimatesApi:
                 file_list.append(attachments)
         else:
             file_list = None
-        response = zoho_http_client.post(url, self.details, data, None, \
+        response = zoho_http_client.post(url, self.details, self.headers, data, None, \
                    file_list) 
         return parser.get_message(response) 
   
@@ -275,7 +277,7 @@ class EstimatesApi:
         estimate_ids = {
             'estimate_ids': estimate_id
             }
-        response = zoho_http_client.post(url, self.details, '', \
+        response = zoho_http_client.post(url, self.details, self.headers, '', \
                    estimate_ids)
         return parser.get_message(response) 
 
@@ -298,7 +300,7 @@ class EstimatesApi:
                 }
         else:
             query = None
-        response = zoho_http_client.get(url, self.details, query)
+        response = zoho_http_client.get(url, self.details, self.headers, query)
         return parser.get_email_content(response) 
  
     def bulk_export_estimates(self, estimate_id):
@@ -315,7 +317,7 @@ class EstimatesApi:
         query = {
             'estimate_ids': estimate_id
             }
-        response = zoho_http_client.getfile(url, self.details, query)
+        response = zoho_http_client.getfile(url, self.details, self.headers, query)
         return response 
   
     def bulk_print_estimates(self, estimate_ids):
@@ -332,7 +334,7 @@ class EstimatesApi:
         query = {
             'estimate_ids': estimate_ids
             }
-        response = zoho_http_client.getfile(url, self.details, query)
+        response = zoho_http_client.getfile(url, self.details, self.headers, query)
         return response
 
    
@@ -360,7 +362,7 @@ class EstimatesApi:
                 }
         else: 
             query = None
-        response = zoho_http_client.put(url, self.details, data, query)
+        response = zoho_http_client.put(url, self.details, self.headers, data, query)
         return parser.get_billing_address(response) 
 
     def update_shipping_address(self, estimate_id, address, 
@@ -388,7 +390,7 @@ class EstimatesApi:
                 }
         else:
             query = None
-        response = zoho_http_client.put(url, self.details, data, query)
+        response = zoho_http_client.put(url, self.details, self.headers, data, query)
         return parser.get_shipping_address(response)
  
     def list_estimate_template(self):
@@ -399,7 +401,7 @@ class EstimatesApi:
 
         """
         url = base_url + 'templates'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.estimate_template_list(response)
   
     def update_estimate_template(self, estimate_id, template_id):
@@ -414,7 +416,7 @@ class EstimatesApi:
         
         """
         url = base_url + estimate_id + '/templates/' + template_id
-        response = zoho_http_client.put(url, self.details, '')
+        response = zoho_http_client.put(url, self.details, self.headers, '')
         return parser.get_message(response)
 
 # Comments and History
@@ -430,7 +432,7 @@ class EstimatesApi:
  
         """ 
         url = base_url + estimate_id + '/comments'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_comments(resp)
   
     def add_comment(self, estimate_id, description, show_comment_to_clients):
@@ -452,7 +454,7 @@ class EstimatesApi:
         field = {
             'JSONString': dumps(data)
             }
-        resp = zoho_http_client.post(url, self.details, field)
+        resp = zoho_http_client.post(url, self.details, self.headers, field)
         return parser.get_comment(resp)
 
     def update_comment(self, estimate_id, comment_id, description, 
@@ -476,7 +478,7 @@ class EstimatesApi:
         field = {
             'JSONString': dumps(data)
             }
-        resp = zoho_http_client.put(url, self.details, field)
+        resp = zoho_http_client.put(url, self.details, self.headers, field)
         return parser.get_comment(resp) 
   
     def delete_comment(self, estimate_id, comment_id):
@@ -490,7 +492,7 @@ class EstimatesApi:
        
         """
         url = base_url + estimate_id + '/comments/' + comment_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
    
    

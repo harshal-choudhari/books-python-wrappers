@@ -44,8 +44,10 @@ class BankTransactionsApi:
             organization id(str): User's Organization id.
 
         """
-        self.details = { 
-            'authtoken': authtoken, 
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
+        self.details = {
             'organization_id': organization_id
             }
   
@@ -59,7 +61,7 @@ class BankTransactionsApi:
             instance: Bank transaction list object.
    
         """
-        resp = zoho_http_client.get(base_url, self.details, parameter)
+        resp = zoho_http_client.get(base_url, self.details, self.headers, parameter)
         return parser.get_list(resp)
 
     def get(self, transaction_id):
@@ -73,7 +75,7 @@ class BankTransactionsApi:
 
         """
         url = base_url + transaction_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_transaction(resp) 
  
     def create(self, transaction):
@@ -90,7 +92,7 @@ class BankTransactionsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(base_url, self.details, data)
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data)
         return parser.get_transaction(resp) 
 
     def update(self, bank_transaction_id, transaction):
@@ -109,7 +111,7 @@ class BankTransactionsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_transaction(resp) 
 
     def delete(self, transaction_id): 
@@ -123,7 +125,7 @@ class BankTransactionsApi:
  
         """
         url = base_url + transaction_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
   
     def get_matching_transactions(self, bank_transaction_id, parameters=None): 
@@ -140,7 +142,7 @@ class BankTransactionsApi:
         """
         url = base_url + 'uncategorized/' + bank_transaction_id + \
               '/match'
-        resp = zoho_http_client.get(url, self.details, parameters) 
+        resp = zoho_http_client.get(url, self.details, self.headers, parameters) 
         return parser.get_matching_transaction(resp) 
   
     def match_a_transaction(self, transaction_id, transactions, 
@@ -179,7 +181,7 @@ class BankTransactionsApi:
         json_string = {
             'JSONString': dumps(data)
             }
-        resp = zoho_http_client.post(url, self.details, json_string, query)
+        resp = zoho_http_client.post(url, self.details, self.headers, json_string, query)
         return parser.get_message(resp) 
 
     def unmatch_a_matched_transaction(self, transaction_id, account_id=None):
@@ -204,7 +206,7 @@ class BankTransactionsApi:
         data = {
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data, parameter)
+        resp = zoho_http_client.post(url, self.details, self.headers, data, parameter)
         return parser.get_message(resp) 
 
     def get_associated_transactions(self, transaction_id, sort_column=None):
@@ -227,7 +229,7 @@ class BankTransactionsApi:
             param = {
                 'sort_column': sort_column
                 }
-        resp = zoho_http_client.get(url, self.details, param) 
+        resp = zoho_http_client.get(url, self.details, self.headers, param) 
         return parser.get_associated_transaction(resp) 
 
     def exclude_a_transaction(self, transaction_id, account_id=None):
@@ -251,7 +253,7 @@ class BankTransactionsApi:
         data = {
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data, param)
+        resp = zoho_http_client.post(url, self.details, self.headers, data, param)
         return parser.get_message(resp) 
 
     def restore_a_transaction(self, transaction_id, account_id=None):
@@ -279,7 +281,7 @@ class BankTransactionsApi:
         data = {
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data, param)
+        resp = zoho_http_client.post(url, self.details, self.headers, data, param)
         return parser.get_message(resp) 
 
     def categorize_an_uncategorized_transaction(self, transaction_id, \
@@ -300,7 +302,7 @@ class BankTransactionsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp) 
 
     def categorize_as_credit_note_refunds(self, transaction_id, credit_note):
@@ -321,7 +323,7 @@ class BankTransactionsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp)
 
     def categorize_as_vendor_payment(self, transaction_id, vendor_payment):
@@ -341,7 +343,7 @@ class BankTransactionsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp) 
   
     def categorize_as_customer_payment(self, transaction_id, customer_payment, \
@@ -369,7 +371,7 @@ class BankTransactionsApi:
             param = {
                 'contact_ids': contact_ids
                 }
-        resp = zoho_http_client.post(url, self.details, data, param)
+        resp = zoho_http_client.post(url, self.details, self.headers, data, param)
         return parser.get_message(resp) 
 
     def categorize_as_expense(self, transaction_id, expense, receipt=None):
@@ -400,8 +402,7 @@ class BankTransactionsApi:
                     'content': open(receipt).read()
                     } 
                 }]
-        print data
-        resp = zoho_http_client.post(url, self.details, data, None, attachments)
+        resp = zoho_http_client.post(url, self.details, self.headers, data, None, attachments)
         return parser.get_message(resp) 
 
     def uncategorize_a_categorized_transaction(self, transaction_id, 
@@ -426,6 +427,6 @@ class BankTransactionsApi:
         data = {
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data,  query)
+        resp = zoho_http_client.post(url, self.details, self.headers, data,  query)
         return parser.get_message(resp) 
 

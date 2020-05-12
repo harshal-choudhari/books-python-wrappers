@@ -4,7 +4,10 @@ from books.model.BankRule import BankRule
 from books.model.Criteria import Criteria
 from books.service.ZohoBooks import ZohoBooks
 
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 bank_rules_api = zoho_books.get_bank_rules_api()
 

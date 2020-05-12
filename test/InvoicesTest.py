@@ -12,7 +12,10 @@ from books.model.InvoiceCredited import InvoiceCredited
 from books.model.Comment import Comment
 
 from books.service.ZohoBooks import ZohoBooks
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 invoice_api = zoho_books.get_invoices_api()
 #invoice_id = invoice_api.get_invoices().get_invoices()[0].get_invoice_id()

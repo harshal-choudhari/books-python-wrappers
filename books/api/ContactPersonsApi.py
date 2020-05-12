@@ -2,7 +2,7 @@
 
 from books.util.ZohoHttpClient import ZohoHttpClient
 from books.parser.ContactParser import ContactParser
-from Api import Api
+from .Api import Api
 from json import dumps
 
 base_url = Api().base_url + 'contacts/'
@@ -30,9 +30,11 @@ class ContactPersonsApi:
             organization_id(str): User's organization id.
 
         """
-        self.details={
-            'authtoken':authtoken,
-            'organization_id':organization_id,
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
+        self.details = {
+            'organization_id': organization_id
             }
 
     def get_contact_persons(self, contact_id):
@@ -46,7 +48,7 @@ class ContactPersonsApi:
 
         """ 
         url = base_url + contact_id + '/contactpersons'
-        response=zoho_http_client.get(url, self.details)
+        response=zoho_http_client.get(url, self.details, self.headers)
         return parser.get_contact_persons(response) 
 
     def get(self, contact_person_id):
@@ -60,7 +62,7 @@ class ContactPersonsApi:
 
         """
         url = base_url + 'contactpersons/' + contact_person_id
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_contact_person(response) 
   
     def create(self, contact_person):
@@ -75,11 +77,10 @@ class ContactPersonsApi:
         """
         url = base_url + 'contactpersons'
         json_object = dumps(contact_person.to_json())
-        print json_object
         data = {
             'JSONString': json_object
             }
-        response = zoho_http_client.post(url, self.details, data)
+        response = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_contact_person(response)
    
     def update(self, contact_person_id, contact_person):
@@ -98,7 +99,7 @@ class ContactPersonsApi:
         data = {
             'JSONString': json_object
             }
-        response = zoho_http_client.put(url, self.details, data)
+        response = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_contact_person(response) 
 
     def delete(self, contact_person_id):
@@ -112,7 +113,7 @@ class ContactPersonsApi:
  
         """
         url = base_url + 'contactpersons/' + contact_person_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response)
       
     def mark_as_primary_contact(self, contact_person_id):
@@ -127,7 +128,7 @@ class ContactPersonsApi:
       
         """
         url = base_url + 'contactpersons/' + contact_person_id + '/primary'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response) 
     
   

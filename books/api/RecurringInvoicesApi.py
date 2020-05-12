@@ -2,7 +2,7 @@
 
 from books.util.ZohoHttpClient import ZohoHttpClient
 from books.parser.RecurringInvoiceParser import RecurringInvoiceParser 
-from Api import Api
+from .Api import Api
 from json import dumps
 
 base_url = Api().base_url + 'recurringinvoices/'
@@ -32,8 +32,10 @@ class RecurringInvoicesApi:
             organization_id(str): User's organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
             'organization_id': organization_id
             }
 
@@ -48,7 +50,7 @@ class RecurringInvoicesApi:
             instance: Recurring invoice list object.
 
         """
-        response = zoho_http_client.get(base_url, self.details, parameter) 
+        response = zoho_http_client.get(base_url, self.details, self.headers, parameter) 
         return parser.recurring_invoices(response)  
   
     def get_recurring_invoice(self, recurring_invoice_id):
@@ -62,7 +64,7 @@ class RecurringInvoicesApi:
 
         """
         url = base_url + recurring_invoice_id
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.recurring_invoice(response)  
 
     def create(self, recurring_invoice):
@@ -79,7 +81,7 @@ class RecurringInvoicesApi:
         data = {
             'JSONString': json_object
             }
-        response = zoho_http_client.post(base_url, self.details, data)
+        response = zoho_http_client.post(base_url, self.details, self.headers, data)
         return parser.recurring_invoice(response)  
 
     def update(self, recurring_invoice_id, recurring_invoice):
@@ -98,7 +100,7 @@ class RecurringInvoicesApi:
         data = {
             'JSONString': json_object
             }
-        response = zoho_http_client.put(url, self.details, data)
+        response = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.recurring_invoice(response)  
     
     def delete(self, recurring_invoice_id): 
@@ -112,7 +114,7 @@ class RecurringInvoicesApi:
  
         """
         url = base_url + recurring_invoice_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response) 
 
     def stop_recurring_invoice(self, recurring_invoice_id):
@@ -126,7 +128,7 @@ class RecurringInvoicesApi:
 
         """
         url = base_url + recurring_invoice_id + '/status/stop'
-        response = zoho_http_client.post(url, self.details, '') 
+        response = zoho_http_client.post(url, self.details, self.headers, '') 
         return parser.get_message(response)  
 
     def resume_recurring_invoice(self, recurring_invoice_id):
@@ -140,7 +142,7 @@ class RecurringInvoicesApi:
 
         """
         url = base_url + recurring_invoice_id + '/status/resume'
-        response = zoho_http_client.post(url, self.details, '') 
+        response = zoho_http_client.post(url, self.details, self.headers, '') 
         return parser.get_message(response) 
 
     def update_recurring_invoice_template(self, 
@@ -157,7 +159,7 @@ class RecurringInvoicesApi:
 
         """
         url = base_url + recurring_invoice_id + '/templates/' + template_id
-        response = zoho_http_client.put(url, self.details, '')
+        response = zoho_http_client.put(url, self.details, self.headers, '')
         return parser.get_message(response)  
  
     def list_recurring_invoice_history(self, recurring_invoice_id):
@@ -171,7 +173,7 @@ class RecurringInvoicesApi:
 
         """
         url = base_url + recurring_invoice_id + '/comments'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.recurring_invoice_history_list(response) 
 
       

@@ -28,8 +28,10 @@ class BankRulesApi:
             organization id(str): User's Organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
             'organization_id': organization_id
             }
     
@@ -46,7 +48,7 @@ class BankRulesApi:
         param = {
             'account_id': account_id
             }
-        resp = zoho_http_client.get(base_url, self.details, param)
+        resp = zoho_http_client.get(base_url, self.details, self.headers, param)
         return parser.get_rules(resp) 
 
     def get(self, rule_id):
@@ -60,7 +62,7 @@ class BankRulesApi:
 
         """
         url = base_url + rule_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_rule(resp) 
 
     def create(self, rule):
@@ -77,7 +79,7 @@ class BankRulesApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(base_url, self.details, data)
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data)
         return parser.get_rule(resp)
    
     def update(self, rule_id, rule):
@@ -95,7 +97,7 @@ class BankRulesApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_rule(resp) 
 
     def delete(self, rule_id):
@@ -109,6 +111,6 @@ class BankRulesApi:
 
         """
         url = base_url + rule_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
       

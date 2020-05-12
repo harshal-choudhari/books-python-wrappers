@@ -3,7 +3,10 @@
 from books.model.RecurringExpense import RecurringExpense
 from books.service.ZohoBooks import ZohoBooks
 
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 recurring_expenses_api = zoho_books.get_recurring_expenses_api()
 

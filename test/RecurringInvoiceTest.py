@@ -5,7 +5,10 @@ from books.model.PaymentGateway import PaymentGateway
 from books.model.LineItem import LineItem
 
 from books.service.ZohoBooks import ZohoBooks
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 recurring_invoice_api = zoho_books.get_recurring_invoices_api()
 recurring_invoice_id = recurring_invoice_api.get_recurring_invoices().get_recurring_invoices()[0].get_recurring_invoice_id()

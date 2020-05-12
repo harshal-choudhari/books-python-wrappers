@@ -4,7 +4,7 @@ from os.path import basename
 from json import dumps
 from books.util.ZohoHttpClient import ZohoHttpClient
 from books.parser.ContactParser import ContactParser
-from Api import Api
+from .Api import Api
 
 base_url = Api().base_url + 'contacts/'
 parser = ContactParser()
@@ -39,8 +39,10 @@ class ContactsApi:
             organization_id(str): User's organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details={
-            'authtoken': authtoken,
             'organization_id': organization_id
             }
   
@@ -55,7 +57,7 @@ class ContactsApi:
             instance: List of contact objects with pagination.
 
         """
-        response = zoho_http_client.get(base_url, self.details, parameter)
+        response = zoho_http_client.get(base_url, self.details, self.headers, parameter)
         return parser.get_contacts(response) 
 
     def get(self, contact_id):
@@ -69,7 +71,7 @@ class ContactsApi:
 
         """
         url = base_url + contact_id
-        response = zoho_http_client.get(url, self.details, None)
+        response = zoho_http_client.get(url, self.details, self.headers, None)
         return parser.get_contact(response) 
 
     def create(self, contact):
@@ -86,8 +88,8 @@ class ContactsApi:
         field = {
                 'JSONString':dumps(data)
                 } 
-        response = zoho_http_client.post(base_url, self.details, field, None)
-        return parser.get_contact(response) 
+        response = zoho_http_client.post(base_url, self.details, self.headers, field, None)
+        return parser.get_contact(response)
    
     def update(self, contact_id, contact):
         """Update a contact with the given information.
@@ -109,7 +111,7 @@ class ContactsApi:
         field = {
                 'JSONString':dumps(data)
                 } 
-        response = zoho_http_client.put(url, self.details, field, None)
+        response = zoho_http_client.put(url, self.details, self.headers, field, None)
         return parser.get_contact(response) 
  
     def delete(self, contact_id):
@@ -126,7 +128,7 @@ class ContactsApi:
 
         """ 
         url = base_url +  contact_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details,self.headers)
         return parser.get_message(response) 
 
     def mark_active(self, contact_id):
@@ -143,7 +145,7 @@ class ContactsApi:
 
         """
         url= base_url + contact_id + '/active'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response) 
 
     def mark_inactive(self, contact_id):
@@ -160,7 +162,7 @@ class ContactsApi:
 
         """         
         url = base_url + contact_id + '/inactive'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response) 
 
     def enable_payment_reminder(self, contact_id):
@@ -178,7 +180,7 @@ class ContactsApi:
 
         """
         url = base_url + contact_id + '/paymentreminder/enable'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response)
  
     def disable_payment_reminder(self, contact_id):
@@ -196,7 +198,7 @@ class ContactsApi:
 
         """
         url = base_url + contact_id + '/paymentreminder/disable'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers,'')
         return parser.get_message(response) 
 
     def email_statement(self, contact_id, email,start_date=None, end_date=None, 
@@ -232,7 +234,7 @@ class ContactsApi:
             'JSONString': dumps(data)
                 }
         if attachments is None:
-            response = zoho_http_client.post(url, self.details, fields)
+            response = zoho_http_client.post(url, self.details, self.headers, fields)
         else:
             file_list = []
 
@@ -245,8 +247,7 @@ class ContactsApi:
                     }
                 file_list.append(attachment)
             
-            response = zoho_http_client.post(url, self.details, fields, 
-                                                     None, file_list)
+            response = zoho_http_client.post(url, self.details, self.headers, fields, None, file_list)
         return parser.get_message(response) 
 
     def get_statement_mail_content(self, contact_id, start_date, end_date):
@@ -268,7 +269,7 @@ class ContactsApi:
             'start_date': start_date,
             'end_date': end_date
             }
-        response = zoho_http_client.get(url, self.details, query_string)
+        response = zoho_http_client.get(url, self.details, self.headers, query_string)
         return parser.get_mail_content(response) 
  
     def email_contact(self, contact_id, email, attachments=None, 
@@ -311,8 +312,7 @@ class ContactsApi:
             parameter = {
                 'send_customer_statement': send_customer_statement
                 }
-            response = zoho_http_client.post(url, self.details, data, 
-                                                     parameter, file_list)
+            response = zoho_http_client.post(url, self.details, self.headers, data, parameter, file_list)
 
         elif attachments is not None:
             file_list = []
@@ -326,18 +326,16 @@ class ContactsApi:
                     }
                 file_list.append(attachment)
 
-            response = zoho_http_client.post(url, self.details, 
-                                                     data, None, file_list)
+            response = zoho_http_client.post(url, self.details, self.headers, data, None, file_list)
 
         elif send_customer_statement is not None:
             parameter = { 
                 'send_customer_statement': send_customer_statement
                 }
-            response = zoho_http_client.post(url, self.details, data, 
-                                                     parameter)
+            response = zoho_http_client.post(url, self.details, self.headers, data, parameter)
 
         else:
-            response = zoho_http_client.post(url, self.details, data)
+            response = zoho_http_client.post(url, self.details, self.headers, data)
 
         return parser.get_message(response)
 
@@ -355,7 +353,7 @@ class ContactsApi:
 
         """
         url = base_url + contact_id + '/comments'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_comment_list(response) 
 
     def get_comments(self, contact_id):
@@ -372,7 +370,7 @@ class ContactsApi:
 
         """
         url = base_url + contact_id + '/comments'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_comment_list(response).get_comments()
      
     def list_refunds(self, contact_id):
@@ -389,7 +387,7 @@ class ContactsApi:
 
         """
         url = base_url + contact_id + '/refunds'
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_refund_list(response) 
  
     def get_refunds(self, contact_id): 
@@ -423,7 +421,7 @@ class ContactsApi:
 
         """
         url = base_url + contact_id + '/track1099'
-        response = zoho_http_client.post(url, self.details, '')
+        response = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(response)   
 
     def untrack_1099(self, contact_id):
@@ -440,5 +438,5 @@ class ContactsApi:
 
         """
         url = base_url + contact_id + '/untrack1099'
-        response = zoho_http_client.post(url, self.details, '')
-        return parser.get_message(response) 
+        response = zoho_http_client.post(url, self.details, self.headers, '')
+        return parser.get_message(response)

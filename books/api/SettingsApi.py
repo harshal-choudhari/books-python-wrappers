@@ -70,8 +70,10 @@ class SettingsApi:
             organization_id(str): User's Organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
             'organization_id': organization_id 
             }
     
@@ -83,7 +85,7 @@ class SettingsApi:
 
         """
         url = base_url + 'preferences'
-        resp = zoho_http_client.get(url, self.details) 
+        resp = zoho_http_client.get(url, self.details, self.headers) 
         return parser.preference_list(resp) 
 
     def update_preferences(self, preference):
@@ -101,7 +103,7 @@ class SettingsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, data, self.headers)
         return parser.get_message(resp) 
 
     def create_unit(self, unit):
@@ -121,7 +123,7 @@ class SettingsApi:
         json_string = {
             'JSONString': dumps(data)
             }
-        resp = zoho_http_client.post(url, self.details, json_string)
+        resp = zoho_http_client.post(url, self.details, self.headers, json_string)
         return parser.get_message(resp) 
         
     def delete_unit(self, unit_id):
@@ -135,7 +137,7 @@ class SettingsApi:
 
         """
         url = base_url + 'units/' + unit_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
     
     def get_invoice_settings(self):
@@ -146,7 +148,7 @@ class SettingsApi:
  
         """
         url = base_url + 'invoices'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_invoice_settings(resp) 
 
     def update_invoice_settings(self, invoice_settings):
@@ -164,7 +166,7 @@ class SettingsApi:
         data = { 
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_invoice_settings(resp)
 
     def get_invoice_notes_and_terms(self):
@@ -175,7 +177,7 @@ class SettingsApi:
 
         """
         url = base_url + 'invoices/notesandterms'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_notes_and_terms(resp) 
 
     def update_invoice_notes_and_terms(self, invoice_notes_and_terms):
@@ -193,7 +195,7 @@ class SettingsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_notes_and_terms(resp) 
 
     def get_estimate_settings(self):
@@ -204,7 +206,7 @@ class SettingsApi:
 
         """
         url = base_url + 'estimates'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_estimate_settings(resp) 
 
     def update_estimate_settings(self, estimate_setting):
@@ -222,7 +224,7 @@ class SettingsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_estimate_settings(resp) 
 
     def get_estimates_notes_and_terms(self): 
@@ -233,7 +235,7 @@ class SettingsApi:
 
         """
         url = base_url + 'estimates/notesandterms'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_notes_and_terms(resp) 
 
     def update_estimates_notes_and_terms(self, notes_and_terms):
@@ -251,7 +253,7 @@ class SettingsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data) 
+        resp = zoho_http_client.put(url, self.details, self.headers, data) 
         return parser.get_notes_and_terms(resp) 
 
     def list_creditnote_settings(self):
@@ -262,7 +264,7 @@ class SettingsApi:
 
         """
         url = base_url + 'creditnotes'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_creditnote_settings(resp) 
 
     def update_creditnote_settings(self, creditnotes_settings):
@@ -280,7 +282,7 @@ class SettingsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_creditnote_settings(resp) 
 
     def get_creditnote_notes_and_terms(self):
@@ -291,7 +293,7 @@ class SettingsApi:
 
         """
         url = base_url + 'creditnotes/notesandterms'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_notes_and_terms(resp)
 
     def update_creditnote_notes_and_terms(self, notes_and_terms):
@@ -309,7 +311,7 @@ class SettingsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data) 
+        resp = zoho_http_client.put(url, self.details, self.headers, data) 
         return parser.get_notes_and_terms(resp) 
 
     def get_currencies(self, param=None):
@@ -330,7 +332,7 @@ class SettingsApi:
                 }
         else:
             data = None
-        resp = zoho_http_client.get(url, self.details, data)
+        resp = zoho_http_client.get(url, self.details, self.headers, data)
         return parser.get_currencies(resp) 
 
     def get_currency(self, currency_id):
@@ -344,7 +346,7 @@ class SettingsApi:
 
         """
         url = base_url + 'currencies/' + currency_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_currency(resp) 
 
     def create_currency(self, currency):
@@ -362,7 +364,7 @@ class SettingsApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_currency(resp) 
     
     def update_currency(self, currency_id, currency):
@@ -381,7 +383,7 @@ class SettingsApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_currency(resp) 
      
     def delete_currency(self, currency_id):
@@ -395,7 +397,7 @@ class SettingsApi:
  
         """
         url = base_url + 'currencies/' + currency_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
     def list_exchange_rates(self, currency_id, param=None):
@@ -410,7 +412,7 @@ class SettingsApi:
 
         """
         url = base_url + 'currencies/' + currency_id + '/exchangerates'
-        resp = zoho_http_client.get(url, self.details, param)
+        resp = zoho_http_client.get(url, self.details, self.headers, param)
         return parser.get_exchange_rates(resp) 
 
     def get_exchange_rate(self, currency_id, exchange_rate_id):
@@ -427,7 +429,7 @@ class SettingsApi:
         """ 
         url = base_url + 'currencies/' + currency_id + '/exchangerates/' + \
               exchange_rate_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_exchange_rate(resp) 
 
     def create_exchange_rate(self, exchange_rate):
@@ -447,7 +449,7 @@ class SettingsApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_exchange_rate(resp) 
  
     def update_exchange_rate(self, exchange_rate):
@@ -466,7 +468,7 @@ class SettingsApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_message(resp) 
 
     def delete_exchange_rate(self, currency_id, exchange_rate_id):
@@ -482,7 +484,7 @@ class SettingsApi:
         """
         url = base_url + 'currencies/' + currency_id + '/exchangerates/' + \
               exchange_rate_id
-        resp = zoho_http_client.delete(url, self.details) 
+        resp = zoho_http_client.delete(url, self.details, self.headers) 
         return parser.get_message(resp) 
 
     def get_taxes(self):
@@ -493,7 +495,7 @@ class SettingsApi:
 
         """
         url = base_url + 'taxes'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_taxes(resp) 
 
     def get_tax(self, tax_id):
@@ -507,7 +509,7 @@ class SettingsApi:
 
         """
         url = base_url + 'taxes/' + tax_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_tax(resp) 
     
     def create_tax(self, tax):
@@ -525,7 +527,7 @@ class SettingsApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_tax(resp) 
  
     def update_tax(self, tax_id, tax):
@@ -544,7 +546,7 @@ class SettingsApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_tax(resp) 
             
     def delete_tax(self, tax_id):
@@ -558,7 +560,7 @@ class SettingsApi:
 
         """
         url = base_url + 'taxes/' + tax_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
    
     def get_tax_group(self, tax_group_id):
@@ -572,7 +574,7 @@ class SettingsApi:
 
         """
         url = base_url + 'taxgroups/' + tax_group_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_tax_group(resp)
 
     def create_tax_group(self, tax_group):
@@ -591,8 +593,7 @@ class SettingsApi:
         data = {
             'JSONString': json_obj
             }
-        print data
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_tax_group(resp) 
 
     def update_tax_group(self, tax_group):
@@ -612,7 +613,7 @@ class SettingsApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_message(resp) 
  
     def delete_tax_group(self, tax_group_id): 
@@ -626,7 +627,7 @@ class SettingsApi:
    
         """
         url = base_url + 'taxgroups/' + tax_group_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
     def get_opening_balance(self):
@@ -637,7 +638,7 @@ class SettingsApi:
 
         """
         url = base_url + 'openingbalances'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_opening_balance(resp) 
 
     def create_opening_balance(self, opening_balance):
@@ -655,7 +656,7 @@ class SettingsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_opening_balance(resp) 
 
     def update_opening_balance(self, opening_balance):
@@ -673,7 +674,7 @@ class SettingsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_opening_balance(resp) 
 
     def delete_opening_balance(self):
@@ -685,7 +686,7 @@ class SettingsApi:
 
         """
         url = base_url + 'openingbalances'
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
                  
     def list_auto_payment_reminder(self):
@@ -696,7 +697,7 @@ class SettingsApi:
 
         """
         url = base_url + 'autoreminders'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_autoreminders(resp) 
 
     def get_auto_payment_reminder(self, reminder_id):
@@ -710,7 +711,7 @@ class SettingsApi:
 
         """
         url = base_url + 'autoreminders/' + reminder_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_autoreminder(resp) 
 
     def enable_auto_reminder(self, reminder_id):
@@ -727,7 +728,7 @@ class SettingsApi:
         data = {
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp) 
 
     def disable_auto_reminder(self, reminder_id):
@@ -744,7 +745,7 @@ class SettingsApi:
         data = {
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp) 
 
     def update_auto_reminder(self, reminder_id, autoreminder):
@@ -764,7 +765,7 @@ class SettingsApi:
         data = { 
             'JSONString': json_obj
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_message(resp) 
 
     def list_manual_reminders(self, type_of_reminder=None):
@@ -785,7 +786,7 @@ class SettingsApi:
                 }
         else:
             param = None
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_manual_reminders(resp) 
 
     def get_manual_reminder(self, reminder_id):
@@ -799,7 +800,7 @@ class SettingsApi:
 
         """
         url = base_url + 'manualreminders/' + reminder_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_manual_reminder(resp) 
 
     def update_manual_reminder(self, reminder_id, manual_reminder):
@@ -818,7 +819,7 @@ class SettingsApi:
         data = { 
             'JSONString': json_obj
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_message(resp) 
  
 

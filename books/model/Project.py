@@ -373,9 +373,7 @@ class Project:
             data['budget_amount'] = self.budget_amount
         if self.users:
             data['users'] = []
-            print self.users
             for value in self.users:
-                print value
                 user = value.to_json()
                 data['users'].append(user)
         if self.tasks:

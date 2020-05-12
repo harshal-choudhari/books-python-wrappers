@@ -7,7 +7,10 @@ from books.model.TimeEntry import TimeEntry
 from books.model.Comment import Comment
 from books.service.ZohoBooks import ZohoBooks
 
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 projects_api = zoho_books.get_projects_api()
 

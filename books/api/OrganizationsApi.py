@@ -26,9 +26,11 @@ class OrganizationsApi:
             organization_id(str): User's Organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
-            'organization_id': organization_id 
+            'organization_id': organization_id
             }
 
     def get_organizations(self):
@@ -38,7 +40,7 @@ class OrganizationsApi:
             instance: Organizations list object.
 
         """
-        resp = zoho_http_client.get(base_url, self.details) 
+        resp = zoho_http_client.get(base_url, self.details, self.headers) 
         return parser.get_organizations(resp) 
  
     def get(self, organization_id):
@@ -52,7 +54,7 @@ class OrganizationsApi:
 
         """
         url = base_url + organization_id
-        resp = zoho_http_client.get(url, self.details) 
+        resp = zoho_http_client.get(url, self.details, self.headers) 
         return parser.get_organization(resp) 
 
     def create(self, organization):
@@ -69,7 +71,7 @@ class OrganizationsApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.post(base_url, self.details, data)
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data)
         return parser.get_organization(resp)
 
     def update(self, organization_id, organization):
@@ -88,5 +90,5 @@ class OrganizationsApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_organization(resp) 

@@ -28,8 +28,10 @@ class VendorPaymentsApi:
             organization_id(str): User's organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
             'organization_id': organization_id
             }
    
@@ -44,7 +46,7 @@ class VendorPaymentsApi:
             instance: Vendor payments list object.
 
         """
-        resp = zoho_http_client.get(base_url, self.details, parameter)
+        resp = zoho_http_client.get(base_url, self.details, self.headers, parameter)
         return parser.get_list(resp) 
 
     def get(self, payment_id):
@@ -58,7 +60,7 @@ class VendorPaymentsApi:
 
         """
         url = base_url + payment_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_vendor_payment(resp) 
 
     def create(self, vendor_payments):
@@ -75,7 +77,7 @@ class VendorPaymentsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(base_url, self.details, data)
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data)
         return parser.get_vendor_payment(resp) 
 
     def update(self, payment_id, vendor_payments):
@@ -94,7 +96,7 @@ class VendorPaymentsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_vendor_payment(resp) 
 
     def delete(self, payment_id):
@@ -108,7 +110,7 @@ class VendorPaymentsApi:
 
         """
         url = base_url + payment_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
 

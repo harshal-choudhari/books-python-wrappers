@@ -27,8 +27,10 @@ class JournalsApi:
             organization_id(str): User's organization id.
 
         """        
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken,
             'organization_id': organization_id
             }
   
@@ -42,7 +44,7 @@ class JournalsApi:
             instance: Journals List object.
 
         """    
-        resp = zoho_http_client.get(base_url, self.details, parameter)
+        resp = zoho_http_client.get(base_url, self.details, self.headers, parameter)
         return parser.get_list(resp)
 
     def get(self, journal_id):
@@ -56,7 +58,7 @@ class JournalsApi:
 
         """  
         url = base_url + journal_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_journal(resp) 
   
     def create(self, journal):
@@ -73,7 +75,7 @@ class JournalsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(base_url, self.details, data)
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data)
         return parser.get_journal(resp) 
 
     def update(self, journal_id, journal):
@@ -92,7 +94,7 @@ class JournalsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_journal(resp) 
 
     def delete(self, journal_id):
@@ -103,6 +105,6 @@ class JournalsApi:
 
         """
         url = base_url + journal_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 

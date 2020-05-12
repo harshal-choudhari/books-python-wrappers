@@ -8,7 +8,10 @@ from books.model.LineItem import LineItem
 from books.model.CustomField import CustomField
 
 from books.service.ZohoBooks import ZohoBooks
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 estimate_api = zoho_books.get_estimates_api()
 

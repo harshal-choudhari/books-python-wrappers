@@ -29,10 +29,13 @@ class ItemsApi:
             organization_id(str): User's Organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
-            'organization_id': organization_id 
+            'organization_id': organization_id
             }
+        
     def list_items(self): 
         """Get the list of all active items with pagination.
 
@@ -40,7 +43,7 @@ class ItemsApi:
             instance: Items list object.
 
         """
-        resp = zoho_http_client.get(base_url, self.details)
+        resp = zoho_http_client.get(base_url, self.details, self.headers)
         return parser.get_items(resp) 
 
     def get(self, item_id):
@@ -54,7 +57,7 @@ class ItemsApi:
 
         """
         url = base_url + item_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_item(resp) 
     
     def create(self, item):
@@ -71,7 +74,7 @@ class ItemsApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.post(base_url, self.details, data)
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data)
         return parser.get_item(resp) 
 
     def update(self, item_id, item):
@@ -90,7 +93,7 @@ class ItemsApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.put(url, self.details, data) 
+        resp = zoho_http_client.put(url, self.details, self.headers, data) 
         return parser.get_item(resp) 
 
     def delete_item(self, item_id):
@@ -104,7 +107,7 @@ class ItemsApi:
 
         """ 
         url = base_url + item_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
     
     def mark_item_as_active(self, item_id):
@@ -121,7 +124,7 @@ class ItemsApi:
         data = { 
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp) 
 
     def mark_item_as_inactive(self, item_id):
@@ -138,5 +141,5 @@ class ItemsApi:
         data = { 
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp) 

@@ -29,8 +29,10 @@ class CustomerPaymentsApi:
             organization_id(str): User's organization id.
 
         """
-        self.details={
-            'authtoken': authtoken,
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
+        self.details = {
             'organization_id': organization_id
             }
  
@@ -45,7 +47,7 @@ class CustomerPaymentsApi:
             instance: Customer payments list object.
         
         """
-        response = zoho_http_client.get(base_url, self.details, parameter) 
+        response = zoho_http_client.get(base_url, self.details, self.headers, parameter) 
         return parser.customer_payments(response) 
   
     def get(self, payment_id):
@@ -59,7 +61,7 @@ class CustomerPaymentsApi:
         
         """
         url = base_url + payment_id
-        response = zoho_http_client.get(url, self.details)
+        response = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_customer_payment(response) 
   
     def create(self, customer_payment):
@@ -76,7 +78,7 @@ class CustomerPaymentsApi:
         data = {
             'JSONString': json_object
             }
-        response = zoho_http_client.post(base_url,self.details,data)
+        response = zoho_http_client.post(base_url,self.details, self.headers,data)
         return parser.get_customer_payment(response) 
   
     def update(self, payment_id, customer_payment):
@@ -95,7 +97,7 @@ class CustomerPaymentsApi:
         data = {
             'JSONString': json_object
             }
-        response = zoho_http_client.put(url,self.details,data)
+        response = zoho_http_client.put(url,self.details, self.headers,data)
         return parser.get_customer_payment(response) 
 
     def delete(self, payment_id):
@@ -109,6 +111,6 @@ class CustomerPaymentsApi:
       
         """
         url = base_url + payment_id
-        response = zoho_http_client.delete(url, self.details)
+        response = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(response) 
 

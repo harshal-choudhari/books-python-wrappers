@@ -4,7 +4,10 @@ from books.model.VendorPayment import VendorPayment
 from books.model.Bill import Bill
 from books.service.ZohoBooks import ZohoBooks
 
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 vendor_payments_api = zoho_books.get_vendor_payments_api()
 payment_id = vendor_payments_api.get_vendor_payments().get_vendor_payments()[0].get_payment_id()

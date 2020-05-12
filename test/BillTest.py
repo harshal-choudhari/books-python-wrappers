@@ -7,7 +7,10 @@ from books.model.PaymentAndCredit import PaymentAndCredit
 from books.model.BillPayment import BillPayment
 from books.service.ZohoBooks import ZohoBooks
 
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 bill_api = zoho_books.get_bills_api()
 bill_id = bill_api.get_bills().get_bills()[1].get_bill_id()

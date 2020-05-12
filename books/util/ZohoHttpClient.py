@@ -1,6 +1,7 @@
 #$Id$#
 
-from urllib import urlencode,urlretrieve
+from urllib.parse import urlencode
+from urllib.request import urlretrieve
 from httplib2 import Http
 from json import dumps,loads
 from re import search
@@ -15,7 +16,7 @@ class ZohoHttpClient:
     """This class is used to create get, post, put and delete connections 
         for the request."""
 
-    def get(self, url, details, query=None):
+    def get(self, url, details, oauth_headers, query=None):
         """This method is used to make get request for the given url and 
             query string.
         
@@ -29,11 +30,12 @@ class ZohoHttpClient:
 
         """
         http, headers = get_http_connection()
+        headers.update(oauth_headers)
         url = url + '?' + form_query_string(details)
         if query is not None: 
             url += '&' + form_query_string(query)
         resp, content = http.request(url, 'GET', headers=headers)
-        #print content
+        print(content)
         response = get_response(resp['status'], content)
         return response
 
@@ -240,10 +242,10 @@ def convert(input):
     """
     if isinstance(input, dict):
         return {convert(key): convert(value) for key, value in \
-        input.iteritems()}
+        input.items()}
     elif isinstance(input, list):
         return [convert(element) for element in input]
-    elif isinstance(input, unicode):
+    elif isinstance(input, str):
         return input.encode('utf-8')
     else:
         return input
@@ -264,11 +266,11 @@ def get_response(status, content):
 
     """
     resp = loads(content)
-    response = convert(resp)
+    # response = convert(resp)
     if status != '200' and status != '201':
-        raise BooksException(response)
+        raise BooksException(resp)
     else:
-        return response
+        return resp
          
 def get_http_connection():
     http = Http(timeout=60*1000)

@@ -3,8 +3,11 @@
 from books.model.ChartOfAccount import ChartOfAccount
 from books.service.ZohoBooks import ZohoBooks
 
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
- 
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
+
 chart_of_accounts_api = zoho_books.get_chart_of_accounts_api()
 
 account_id = chart_of_accounts_api.get_chart_of_accounts().get_chartofaccounts()[0].get_account_id()

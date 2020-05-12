@@ -32,10 +32,12 @@ class RecurringExpensesApi:
             organization_id(str): User's organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
             'organization_id': organization_id
-            } 
+            }
   
     def get_recurring_expenses(self, param=None):
         """List recurring expenses with pagination.
@@ -48,7 +50,7 @@ class RecurringExpensesApi:
             instance: Recurring expenses list object.
 
         """
-        resp = zoho_http_client.get(base_url, self.details, param) 
+        resp = zoho_http_client.get(base_url, self.details, self.headers, param) 
         return parser.get_list(resp) 
 
     def get(self, recurring_expense_id):
@@ -62,7 +64,7 @@ class RecurringExpensesApi:
 
         """
         url = base_url + recurring_expense_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_recurring_expense(resp) 
 
     def create(self, recurring_expenses):
@@ -79,7 +81,7 @@ class RecurringExpensesApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(base_url, self.details, data)
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data)
         return parser.get_recurring_expense(resp) 
 
     def update(self, recurring_expense_id, recurring_expenses):
@@ -98,7 +100,7 @@ class RecurringExpensesApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_recurring_expense(resp)
   
     def delete(self, recurring_expense_id):
@@ -112,7 +114,7 @@ class RecurringExpensesApi:
 
         """
         url = base_url + recurring_expense_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
  
     def stop_recurring_expense(self, recurring_expense_id):
@@ -126,7 +128,7 @@ class RecurringExpensesApi:
 
         """
         url = base_url + recurring_expense_id + '/status/stop'
-        resp = zoho_http_client.post(url, self.details, '')
+        resp = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(resp) 
   
     def resume_recurring_expense(self, recurring_expense_id):
@@ -140,7 +142,7 @@ class RecurringExpensesApi:
 
         """
         url = base_url + recurring_expense_id + '/status/resume'
-        resp = zoho_http_client.post(url, self.details, '')
+        resp = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(resp) 
 
     def list_child_expenses_created(self, recurring_expense_id, parameter=None):
@@ -163,7 +165,7 @@ class RecurringExpensesApi:
                 }
         else:
             query = None 
-        resp = zoho_http_client.get(url, self.details, query)
+        resp = zoho_http_client.get(url, self.details, self.headers, query)
         return parser.get_expense_history(resp) 
   
     def list_recurring_expense_comments_and_history(self, recurring_expense_id):
@@ -177,7 +179,7 @@ class RecurringExpensesApi:
 
         """
         url = base_url + recurring_expense_id + '/comments'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_comments(resp) 
 
   

@@ -3,7 +3,10 @@
 from books.model.BaseCurrencyAdjustment import BaseCurrencyAdjustment
 from books.service.ZohoBooks import ZohoBooks
 
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 base_currency_adjustment_api = zoho_books.get_base_currency_adjustment_api()
 

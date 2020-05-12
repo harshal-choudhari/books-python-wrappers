@@ -32,9 +32,10 @@ class BankAccountsApi:
             organization id(str): Organization id.
 
         """
-
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
             'organization_id': organization_id
             }
   
@@ -49,7 +50,7 @@ class BankAccountsApi:
             instance: Bank accounts list object.
 
         """
-        resp = zoho_http_client.get(base_url, self.details, parameter)
+        resp = zoho_http_client.get(base_url, self.details, self.headers, parameter)
         return parser.get_list(resp) 
 
     def get(self, account_id):
@@ -63,7 +64,7 @@ class BankAccountsApi:
 
         """
         url = base_url + account_id
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_account_details(resp) 
 
     def create(self, bank_account):
@@ -80,7 +81,7 @@ class BankAccountsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.post(base_url, self.details, data)
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data)
         return parser.get_account_details(resp) 
 
     def update(self, account_id, bank_account):
@@ -99,7 +100,7 @@ class BankAccountsApi:
         data = {
             'JSONString': json_object
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_account_details(resp)     
 
     def delete(self, account_id):
@@ -113,7 +114,7 @@ class BankAccountsApi:
 
         """
         url = base_url + account_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
     def deactivate_account(self, account_id):
@@ -130,7 +131,7 @@ class BankAccountsApi:
         data = {
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp) 
 
     def activate_account(self, account_id):
@@ -146,7 +147,7 @@ class BankAccountsApi:
         data = {
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp) 
 
     def get_last_imported_statement(self, account_id):
@@ -160,7 +161,7 @@ class BankAccountsApi:
 
         """ 
         url = base_url + account_id + '/statement/lastimported'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_statement(resp) 
    
     def delete_last_imported_statement(self, account_id, statement_id):
@@ -179,7 +180,7 @@ class BankAccountsApi:
 
         """
         url = base_url + account_id + '/statement/' + statement_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
  

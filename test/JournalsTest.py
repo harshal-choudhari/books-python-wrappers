@@ -4,7 +4,10 @@ from books.model.Journal import Journal
 from books.model.LineItem import LineItem
 from books.service.ZohoBooks import ZohoBooks
 
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 journal_api = zoho_books.get_journals_api()
 journal_id = journal_api.get_journals().get_journals()[0].get_journal_id()

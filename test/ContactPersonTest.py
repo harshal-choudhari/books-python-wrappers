@@ -3,7 +3,10 @@
 from books.model.ContactPerson import ContactPerson
 from books.service.ZohoBooks import ZohoBooks
 
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 contact_person_api = zoho_books.get_contact_persons_api()
 

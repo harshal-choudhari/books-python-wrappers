@@ -31,10 +31,13 @@ class UsersApi:
             organization_id(str): User's Organization id.
 
         """
+        self.headers = {
+            'Authorization': 'Zoho-oauthtoken ' + authtoken,
+        }
         self.details = {
-            'authtoken': authtoken, 
-            'organization_id': organization_id 
+            'organization_id': organization_id
             }
+        
     def get_users(self, parameters=None):
         """Get the list of users in the organization.
 
@@ -46,7 +49,7 @@ class UsersApi:
             instance: Users list object.
 
         """
-        resp = zoho_http_client.get(base_url, self.details, parameters)
+        resp = zoho_http_client.get(base_url, self.details, self.headers, parameters)
         return parser.get_users(resp) 
 
     def get(self, user_id):
@@ -60,7 +63,7 @@ class UsersApi:
 
         """
         url = base_url + user_id
-        resp = zoho_http_client.get(url, self.details) 
+        resp = zoho_http_client.get(url, self.details, self.headers) 
         return parser.get_user(resp) 
 
     def current_user(self):
@@ -71,7 +74,7 @@ class UsersApi:
 
         """
         url = base_url + 'me'
-        resp = zoho_http_client.get(url, self.details)
+        resp = zoho_http_client.get(url, self.details, self.headers)
         return parser.get_user(resp) 
 
     def create(self, user):
@@ -88,7 +91,7 @@ class UsersApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.post(base_url, self.details, data)
+        resp = zoho_http_client.post(base_url, self.details, self.headers, data)
         return parser.get_user(resp) 
 
     def update(self, user_id, user):
@@ -107,7 +110,7 @@ class UsersApi:
         data = {
             'JSONString': json_obj
             }
-        resp = zoho_http_client.put(url, self.details, data)
+        resp = zoho_http_client.put(url, self.details, self.headers, data)
         return parser.get_user(resp) 
 
     def delete(self, user_id):
@@ -122,7 +125,7 @@ class UsersApi:
 
         """
         url = base_url + user_id
-        resp = zoho_http_client.delete(url, self.details)
+        resp = zoho_http_client.delete(url, self.details, self.headers)
         return parser.get_message(resp) 
 
     def invite_user(self, user_id):
@@ -139,7 +142,7 @@ class UsersApi:
         data = { 
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp) 
 
     def mark_user_as_active(self, user_id):
@@ -156,7 +159,7 @@ class UsersApi:
         data = { 
             'JSONString': ''
             }
-        resp = zoho_http_client.post(url, self.details, data)
+        resp = zoho_http_client.post(url, self.details, self.headers, data)
         return parser.get_message(resp) 
  
     def mark_user_as_inactive(self, user_id):
@@ -170,5 +173,5 @@ class UsersApi:
       
         """
         url = base_url + user_id + '/inactive'
-        resp = zoho_http_client.post(url, self.details, '')
+        resp = zoho_http_client.post(url, self.details, self.headers, '')
         return parser.get_message(resp) 

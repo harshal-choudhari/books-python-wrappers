@@ -18,7 +18,11 @@ from books.model.Autoreminder import Autoreminder
 from books.model.ManualReminder import ManualReminder
 from books.model.TaxGroup import TaxGroup
 from books.service.ZohoBooks import ZohoBooks
-zoho_books = ZohoBooks("{auth_token}", "{organization_id}")
+import os
+
+access_token = os.environ.get('ACCESS_TOKEN')
+organization_id = os.environ.get('ORGANIZATION_ID')
+zoho_books = ZohoBooks(access_token, organization_id)
 
 settings_api = zoho_books.get_settings_api()
 organizations_api = zoho_books.get_organizations_api()
