@@ -1,8 +1,11 @@
 ## **ZohoBooks Python Client Library With Oauth2.0 Support**
 The Python library for integrating with the Zoho Books API.
 This library is forked from [books-python-wrapper](https://github.com/zoho/books-python-wrappers).
+Official library doesn't support OAuth 2.0. It only supports Auth Token which is soon to be deprecated.
 
-Tests are not converted to python3 yet.
+## TODO
+---------------
+1. Tests are not converted to python3 yet.
 
 ## Installation
 ---------------
