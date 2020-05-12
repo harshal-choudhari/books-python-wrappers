@@ -1,10 +1,14 @@
-## **ZohoBooks Python Client Library**
-=========================================
+## **ZohoBooks Python Client Library With Oauth2.0 Support**
 The Python library for integrating with the Zoho Books API.
+This library is forked from [books-python-wrapper](https://github.com/zoho/books-python-wrappers).
+
+Tests are not converted to python3 yet.
 
 ## Installation
 ---------------
-Download the `Books` folder from github repository and add the files in them to your project.
+Setup file is included in code. It can be installed in your project.
+        python3 setup.py install
+        
 
 ## Documentation
 ----------------
@@ -20,11 +24,11 @@ In order to access the Zoho Books APIs, users need to have a valid Zoho account 
 
 For setting up a Zoho account, access the Zoho Books [Sign Up](https://www.zoho.com/books/signup) page and enter the requisite details - email address and password.
  
-### **Generate Auth Token:**
+### **Generate Access and Refresh Tokens:**
 
 - - -
  
-To generate the Auth Token, you need to send an authentication request to Zoho Accounts in a prescribed URL format. [Refer here](https://www.zoho.com/books/api/v3/index.html)
+To generate the Tokens, you need to send an authentication request to Zoho Accounts in a prescribed URL format. [Refer here](https://www.zoho.com/books/api/v3/index.html)
 
 
 ## Python Wrappers - Sample
@@ -52,13 +56,13 @@ Now there are two ways of creating an instance of OrganisationsAPI.
 
 Sample code:
 
-        organizations_api = OrganizationsApi({"authtoken"}, {"organization_id"})
+        organizations_api = OrganizationsApi({"access_token"}, {"organization_id"})
 			
  - Pass the AuthToken and organisations id to first create an instance of ZohoBooks, and then proceed to get the instance of Organisations API. 
 
 Sample code:
      
-        zoho_books = ZohoBooks({"authtoken"}, {"organization_id"})
+        zoho_books = ZohoBooks({"access_token"}, {"organization_id"})
 
         organizations_api = zoho_books.get_organizations_api()
 			
